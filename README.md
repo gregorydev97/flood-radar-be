@@ -23,3 +23,8 @@ This project is currently in development. The main focus is backend architecture
 - Weather/flood-risk data structure
 - API endpoints for alert-related data
 - Backend architecture for a future flood monitoring platform
+
+## License
+
+This project is publicly available for portfolio and review purposes only.  
+All rights reserved. See the LICENSE file for details.
