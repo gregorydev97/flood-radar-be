@@ -4,6 +4,7 @@ import type { StringValue } from 'ms';
 import { UsersModule } from 'src/users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -23,7 +24,8 @@ const jwtExpiresIn = (process.env.JWT_EXPIRES_IN || '1d') as StringValue;
       },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtAuthGuard],
   controllers: [AuthController],
+  exports: [JwtAuthGuard],
 })
 export class AuthModule {}
