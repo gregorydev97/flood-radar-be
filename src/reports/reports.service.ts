@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateReportDto } from "./dto/create-report.dto";
+import { GetReportsQueryDto } from "./dto/get-reports-query.dto";
 
 @Injectable()
 export class ReportsService {
@@ -29,4 +30,57 @@ export class ReportsService {
 
         return newReport;
     }
+
+    async findAll(query: GetReportsQueryDto) {
+        const { north, south, east, west } = query;
+
+        const hasMapBounds =
+            north !== undefined &&
+            south !== undefined &&
+            east !== undefined &&
+            west !== undefined;
+        
+        if (hasMapBounds && north <= south) {
+            throw new BadRequestException('north must be greater than south')
+            
+        }
+
+        if (hasMapBounds && east <= west) {
+            throw new BadRequestException('east must be greater than west')
+        }
+
+        const where: any = {
+            status: 'ACTIVE',
+            deletedAt: null,
+        };
+
+        if (hasMapBounds) {
+            where.latitude = {
+            gte: south,
+            lte: north,
+        };
+
+            where.longitude = {
+            gte: west,
+            lte: east,
+        };
+      }
+
+       return this.prisma.report.findMany({
+        where,
+        orderBy: {
+            createdAt: 'desc',
+        },
+        select: {
+            id: true,
+            userId: true,
+            latitude: true,
+            longitude: true,
+            severity: true,
+            comment: true,
+            status: true,
+            createdAt: true,
+          },
+    });
+}
 }
