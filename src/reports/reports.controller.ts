@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateReportDto } from './dto/create-report.dto';
@@ -30,5 +30,10 @@ export class ReportsController {
   @Get()
   findAll(@Query() query: GetReportsQueryDto) {
     return this.reportsService.findAll(query);
+  }
+
+  @Get(':id')
+  finOne(@Param('id') id: string) {
+    return this.reportsService.findOne(id);
   }
 }
