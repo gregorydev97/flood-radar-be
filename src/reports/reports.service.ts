@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, NotFoundException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateReportDto } from "./dto/create-report.dto";
 import { GetReportsQueryDto } from "./dto/get-reports-query.dto";
@@ -82,5 +82,39 @@ export class ReportsService {
             createdAt: true,
           },
     });
+
 }
+
+    async findOne(id: string) {
+        const report = await this.prisma.report.findFirst({
+            where: {
+              id,
+              status: 'ACTIVE',
+              deletedAt: null,
+            },
+            select: {
+                id: true,
+                latitude: true,
+                longitude: true,
+                severity: true,
+                comment: true,
+                imageUrl: true,
+                status: true,
+                createdAt: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+
+            },
+        });
+
+        if (!report) {
+            throw new NotFoundException('Report not found');
+        }
+
+        return report;
+    }
 }
