@@ -117,4 +117,29 @@ export class ReportsService {
 
         return report;
     }
+
+    async findMyReports(userId: string) {
+        const reports = await this.prisma.report.findMany({
+            where: {
+                userId: userId,
+                status: "ACTIVE",
+                deletedAt: null,
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            select: {
+                id: true,
+                latitude: true,
+                longitude: true,
+                severity: true,
+                comment: true,
+                imageUrl: true,
+                status: true,
+                createdAt: true,
+            },
+        });
+
+        return reports;
+    }
 }
