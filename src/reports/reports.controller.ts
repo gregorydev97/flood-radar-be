@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateReportDto } from './dto/create-report.dto';
 import { GetReportsQueryDto } from './dto/get-reports-query.dto';
 import { ReportsService } from './reports.service';
+import { request } from 'node:http';
 
 type AuthenticatedRequest = Request & {
   user: {
@@ -30,6 +31,16 @@ export class ReportsController {
   @Get()
   findAll(@Query() query: GetReportsQueryDto) {
     return this.reportsService.findAll(query);
+  }
+
+  @Get('my-reports')
+  @UseGuards(JwtAuthGuard)
+  findMyReports(
+    @Req() request: AuthenticatedRequest
+  ) {
+    const userId = request.user.sub;
+
+    return this.reportsService.findMyReports(userId);
   }
 
   @Get(':id')
