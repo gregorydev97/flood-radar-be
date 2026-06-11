@@ -5,6 +5,15 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
+type AuthenticatedRequest = Request & {
+  user: {
+    sub: string;
+    email: string;
+    iat?: number;
+    exp?: number;
+  };
+};
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -17,5 +26,11 @@ export class AuthController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  getMe(@Req() request: AuthenticatedRequest) {
+    return request.user;
   }
 }
